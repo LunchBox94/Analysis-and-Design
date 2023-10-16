@@ -334,3 +334,147 @@ Recommendation
 My recommendation will be a vector.  I recommend this data structure for the Computer Science advising program due to its simplicity, efficiency, and straightforward implementation. Vectors have an uncomplicated design that is very easy to work with and design. This creates an easy-to-point data structure that can be used for a wide number of people and applications. Where the number of courses is expected to be manageable, simplicity is a valuable feature. Vectors are intuitive to use, which will minimize the likelihood of errors and reduce the complexity of the code, making the experience better for the user. This feature will provide a maintainable program and code in the long term, making it more accessible for future updates. Vectors are memory-efficient, requiring less overhead compared to hash tables and binary search trees. 
 
 
+
+
+
+
+// 7-1 Submit Project Two
+// Brennan Haggett
+
+#include <iostream>  // Standard input and output
+#include <fstream>   // File input and output
+#include <string>    // String data type
+#include <algorithm> // Sorting 
+#include <vector>    // vector
+
+using namespace std; 
+
+
+// Define Structure Course //
+
+struct Course {
+    std::string code; // Course code
+    std::string title; // Course title
+    std::vector<std::string> prerequisites; // List of prerequisites
+};
+
+// This will create a function that will load the course data from the input files into a vector //
+
+std::vector<Course> loadCourses(const std::string& filename) {
+    std::vector<Course> courses; // Creates a vector to store Course objects
+    std::ifstream file(filename); // Opens the file with the specified filename to be read
+    if (!file) {
+        std::cerr << "Error: Unable to open file." << std::endl;
+        return courses; // If the file cannot be opened, this will print an error message for the user and return an empty vector.
+    }
+    }
+
+std::string line; // A string to store each line from the file.
+while (std::getline(file, line)) { // Loop through each line in the file.
+    Course course; // Creates a Course object to hold the information.
+    std::istringstream iss(line); // Creates a string stream to parse each line.
+
+    if (std::getline(iss, course.number, '|') && std::getline(iss, course.title, '|')) {
+        // If the action is successfully pull course number and title separated by '|'.
+        std::string prereq; //  String to hold prerequisites.
+
+        while (std::getline(iss, prereq, ',')) {
+            // Parse prerequisites separated by ',' and add them to the vector.
+            course.prerequisites.push_back(prereq);
+        }
+    }
+    courses.push_back(course); // Add the course to the vector.
+}
+
+    file.close();
+    return courses;
+}
+
+// Function to print a list of courses and then sorted by course title
+void printCourseList(const std::vector<Course>& courses) {
+    // Creates a sorted copy of the course vector
+    std::vector<Course> sortedCourses = courses;
+
+    // Sorts the courses based on course title requierments
+    std::sort(sortedCourses.begin(), sortedCourses.end(),
+        [](const Course& a, const Course& b) {
+            return a.courseTitle < b.courseTitle;
+        });
+
+    std::cout << "Course List:" << stdendl;
+
+    
+    for (const Course& course : sortedCourses) {
+        std::cout << course.courseTitle << " (" << course.courseNumber << ")" << std::endl;
+    }
+}
+
+// Function to print course information by course code
+void printCourseInfo(const std::vector<Course>& courses, const std::string& courseCode) {
+    for (const Course& course : courses) {
+        if (course.courseNumber == courseCode) {
+            std::cout << "Course Title: " << course.courseTitle << std::endl;
+
+            if (!course.prerequisites.empty()) {
+                std::cout << "Prerequisites: ";
+                for (const std::string& prereq : course.prerequisites) {
+                    std::cout << prereq << ", ";
+                }
+                std::cout << std::endl;
+            }
+            return;
+        }
+    }
+
+    // If the course is not found, print an error message
+    std::cout << "Course not found." << stdendl;
+}
+
+int main() {
+    std::vector<Course> courseData; // Create a vector to store course data.
+    std::string dataFilename; // Variable to store the filename entered by the user.
+
+    std::cout << "Enter the filename with course data: ";
+    std::cin >> dataFilename; // Prompt the user to enter the filename.
+
+    // Load course data from the file and store it in the 'courseData' vector.
+    courseData = loadCourses(dataFilename);
+
+    while (true) {
+        // Display the main menu for the user.
+        std::cout << "Course Planner Menu:" << std::endl;
+        std::cout << "1. Load Data from File" << std::endl;
+        std::cout << "2. List All Courses" << std::endl;
+        std::cout << "3. Course Information" << std::endl;
+        std::cout << "4. Exit" << std::endl;
+        std::cout << "Enter your choice: ";
+        int userChoice;
+        std::cin >> userChoice; // Prompt the user to enter their choice.
+
+        switch (userChoice) {
+        case 1:
+            // User chooses to load data from the file.
+            courseData = loadCourses(dataFilename); // Reload course data.
+            std::cout << "Data loaded successfully." << std::endl; // Notify the user.
+            break;
+        case 2:
+            // User chooses to list all available courses.
+            printCourseList(courseData); // Call the function to display the course list.
+            break;
+        case 3:
+            // User chooses to get information about a specific course.
+            std::string courseCode;
+            std::cout << "Enter the course code: ";
+            std::cin >> courseCode; // Prompt the user to enter the course code.
+            printCourseInfo(courseData, courseCode); // Call the function to display course information.
+            break;
+        case 4:
+            // User chooses to exit the program.
+            return 0; // Exit the program.
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl; // Handle invalid choices.
+        }
+    }
+
+    return 0;
+}
